@@ -1,5 +1,5 @@
 # Copyright    Cvelth <jCvelth@gmail.com>, 2020
-# version v0.2.0.2
+# version v0.2 (compatible with clang-format 9)
 ---
 Language:                                                  Cpp
 AccessModifierOffset:                                      -4
@@ -69,13 +69,10 @@ IncludeBlocks:                                             Preserve
 IncludeCategories:
   - Regex:                                                 '^"(llvm|llvm-c|clang|clang-c)/'
     Priority:                                              2
-    SortPriority:                                          0
   - Regex:                                                 '^(<|"(gtest|gmock|isl|json)/)'
     Priority:                                              3
-    SortPriority:                                          0
   - Regex:                                                 '.*'
-    Priority:                                              1
-    SortPriority:                                          0
+    Priority:                                              1    
 IncludeIsMainRegex:                                        '([-_](test|unittest))?$'
 IncludeIsMainSourceRegex:                                  ''
 IndentCaseLabels:                                          false
