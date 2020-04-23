@@ -1,5 +1,5 @@
 # Copyright    Cvelth <jCvelth@gmail.com>, 2020
-# version v0.2
+# version v0.2.0.1
 ---
 Language:                                                  Cpp
 AccessModifierOffset:                                      -4
@@ -13,7 +13,7 @@ AlignTrailingComments:                                     true
 AllowAllArgumentsOnNextLine:                               false
 AllowAllConstructorInitializersOnNextLine:                 false
 AllowAllParametersOfDeclarationOnNextLine:                 false
-AllowShortBlocksOnASingleLine:                             Always
+AllowShortBlocksOnASingleLine:                             true
 AllowShortCaseLabelsOnASingleLine:                         true
 AllowShortFunctionsOnASingleLine:                          All
 AllowShortLambdasOnASingleLine:                            All
