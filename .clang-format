@@ -129,7 +129,7 @@ StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
 TabWidth:                                                  4
-UseCRLF:                                                   false
+# UseCRLF:                                                 false
 UseTab:                                                    Always
 ...
 
