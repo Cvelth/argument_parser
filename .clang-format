@@ -79,7 +79,7 @@ IncludeCategories:
     Priority:                                              1
 #   SortPriority:                                          0
 IncludeIsMainRegex:                                        '([-_](test|unittest))?$'
-IncludeIsMainSourceRegex:                                  ''
+# IncludeIsMainSourceRegex:                                ''
 IndentCaseLabels:                                          false
 # IndentGotoLabels:                                          true
 IndentPPDirectives:                                        BeforeHash
