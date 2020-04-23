@@ -1,12 +1,12 @@
 # Copyright    Cvelth <jCvelth@gmail.com>, 2020
-# version v0.2-cf9 (compatibility version for clang-format 9)
+# version v0.2-cf8 (compatibility version for clang-format 8)
 ---
 Language:                                                  Cpp
 AccessModifierOffset:                                      -4
 AlignAfterOpenBracket:                                     Align
 AlignConsecutiveAssignments:                               true
 AlignConsecutiveDeclarations:                              false
-AlignConsecutiveMacros:                                    true
+# AlignConsecutiveMacros:                                  true
 AlignEscapedNewlines:                                      Right
 AlignOperands:                                             true
 AlignTrailingComments:                                     true
