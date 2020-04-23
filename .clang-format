@@ -117,7 +117,7 @@ SpaceBeforeRangeBasedForLoopColon:                         true
 SpaceInEmptyParentheses:                                   false
 SpacesBeforeTrailingComments:                              2
 SpacesInAngles:                                            false
-SpacesInConditionalStatement:                              false
+# SpacesInConditionalStatement:                            false
 SpacesInContainerLiterals:                                 true
 SpacesInCStyleCastParentheses:                             false
 SpacesInParentheses:                                       false
