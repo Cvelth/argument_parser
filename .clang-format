@@ -1,5 +1,5 @@
 # Copyright    Cvelth <jCvelth@gmail.com>, 2020
-# version v0.2.0.1
+# version v0.2.0.2
 ---
 Language:                                                  Cpp
 AccessModifierOffset:                                      -4
@@ -28,7 +28,7 @@ BinPackParameters:                                         true
 BraceWrapping:        
     AfterCaseLabel:                                        false
     AfterClass:                                            false ######
-    AfterControlStatement:                                 Never
+    AfterControlStatement:                                 false
     AfterEnum:                                             false
     AfterFunction:                                         false
     AfterNamespace:                                        false
