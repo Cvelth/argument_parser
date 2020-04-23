@@ -4,14 +4,14 @@
 
 namespace greeter {
 
-  enum class LanguageCode { EN, DE, ES, FR };
+	enum class LanguageCode { EN, DE, ES, FR };
 
-  class Greeter {
-    std::string name;
+	class Greeter {
+		std::string name;
 
-  public:
-    Greeter(std::string name);
-    std::string greet(LanguageCode lang = LanguageCode::EN) const;
-  };
+	public:
+		Greeter(std::string name);
+		std::string greet(LanguageCode lang = LanguageCode::EN) const;
+	};
 
 }  // namespace greeter
