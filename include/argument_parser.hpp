@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <typeinfo>
+#include <vector>
 
 // temporary solution. Should be removed after FP charconv is implemented by the compilers.
 #ifndef _MSC_VER
