@@ -423,7 +423,7 @@ namespace ap {
 										 "\" was given.\n");
 			else
 				warnings_.emplace_back("Value \"" + std::string(sv) + "\" was ignored.\n");
-		};
+		}
 
 	private:
 		std::vector<std::unique_ptr<detail::argument>> arguments_;
