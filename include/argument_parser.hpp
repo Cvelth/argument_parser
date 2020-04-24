@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <typeinfo>
+#include <vector>
 
 // temporary solution. Should be removed after FP charconv is implemented by the compilers.
 #ifndef _MSC_VER
@@ -369,18 +370,21 @@ namespace ap {
 
 	protected:
 		inline detail::argument *find(std::string_view const &name) const {
-			if (auto argument_it = std::find_if(arguments_.begin(), arguments_.end(),
-												[&name](auto const &value) {
-													return value->aliases.contains(
-														std::string(name));
-												});
+			auto predicate = [&name](auto const &value) {
+#if defined(_MSC_VER) || (defined(__GNUG__) && !defined(__clang__))
+				return value->aliases.contains(std::string(name));
+#else
+				// temporary solution. Should be removed after std::set<T>::contains is implemented
+				// by the clang (and others).
+				return value->aliases.find(std::string(name)) != value->aliases.end();
+#endif
+			};
+
+			if (auto argument_it = std::find_if(arguments_.begin(), arguments_.end(), predicate);
 				argument_it != arguments_.end()) {
 				return argument_it->get();
 			} else if (auto positional_it = std::find_if(positional_.begin(), positional_.end(),
-														 [&name](auto const &value) {
-															 return value->aliases.contains(
-																 std::string(name));
-														 });
+														 predicate);
 					   positional_it != positional_.end()) {
 				return positional_it->get();
 			} else
@@ -423,7 +427,7 @@ namespace ap {
 										 "\" was given.\n");
 			else
 				warnings_.emplace_back("Value \"" + std::string(sv) + "\" was ignored.\n");
-		};
+		}
 
 	private:
 		std::vector<std::unique_ptr<detail::argument>> arguments_;
