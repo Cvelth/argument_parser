@@ -12,6 +12,14 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+
+    - name: get the compiler ready
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install -y gcc-9
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
     
     - name: build and install library
       run: |

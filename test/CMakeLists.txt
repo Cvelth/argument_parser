@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(GreeterTests
+project(argument_parser_tests
   LANGUAGES CXX
 )
 
@@ -20,10 +20,10 @@ CPMAddPackage(
 )
 
 if (TEST_INSTALLED_VERSION)
-  find_package(Greeter REQUIRED)
+  find_package(argument_parser REQUIRED)
 else()
   CPMAddPackage(
-    NAME Greeter
+    NAME argument_parser
     SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
   )
 endif()
@@ -37,34 +37,31 @@ CPMAddPackage(
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
-add_executable(GreeterTests ${sources})
-target_link_libraries(GreeterTests doctest Greeter)
+add_executable(argument_parser_tests ${sources})
+target_link_libraries(argument_parser_tests doctest argument_parser)
 
-set_target_properties(GreeterTests PROPERTIES CXX_STANDARD 17)
+set_target_properties(argument_parser_tests PROPERTIES CXX_STANDARD 20)
 
 # enable compiler warnings
 if (NOT TEST_INSTALLED_VERSION)
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(Greeter PUBLIC -Wall -pedantic -Wextra -Werror)
+    target_compile_options(argument_parser INTERFACE -Wall -pedantic -Wextra -Werror)
   elseif(MSVC)
-    target_compile_options(Greeter PUBLIC /W4 /WX)
+    target_compile_options(argument_parser INTERFACE /W4 /WX)
+    target_compile_definitions(argument_parser INTERFACE DOCTEST_CONFIG_USE_STD_HEADERS)
   endif()
 endif()
 
-# ---- Add GreeterTests ----
+# ---- Add argument_parser_tests ----
 
 ENABLE_TESTING() 
 
-# Note: doctest and similar testing frameworks can automatically configure CMake tests
-# For other testing frameworks add the tests target instead:
-# ADD_TEST(GreeterTests GreeterTests)
-
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
-doctest_discover_tests(GreeterTests)
+doctest_discover_tests(argument_parser_tests)
 
 # ---- code coverage ----
 
 if (ENABLE_TEST_COVERAGE)
-  target_compile_options(Greeter PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
-  target_link_options(Greeter PUBLIC -fprofile-arcs -ftest-coverage)
+  target_compile_options(argument_parser INTERFACE -O0 -g -fprofile-arcs -ftest-coverage)
+  target_link_options(argument_parser INTERFACE -fprofile-arcs -ftest-coverage)
 endif()
