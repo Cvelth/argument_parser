@@ -371,12 +371,12 @@ namespace ap {
 	protected:
 		inline detail::argument *find(std::string_view const &name) const {
 			auto predicate = [&name](auto const &value) {
-#if defined(_MSC_VER) || defined(__GNUC__)
+#if defined(_MSC_VER) || (defined(__GNUG__) && !defined(__clang__))
 				return value->aliases.contains(std::string(name));
 #else
 				// temporary solution. Should be removed after std::set<T>::contains is implemented
 				// by the clang (and others).
-				return value->aliases.find(std::string(name)) != value.aliases.end();
+				return value->aliases.find(std::string(name)) != value->aliases.end();
 #endif
 			};
 
