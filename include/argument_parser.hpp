@@ -530,7 +530,7 @@ inline std::optional<T> ap::detail::result::get() const {
 
 	auto valueless = [&out]() { out = std::nullopt; };
 
-	auto value = [&out](std::string_view const &value) {
+	auto value = [&out, this](std::string_view const &value) {
 		if constexpr (std::is_constructible_v<T, std::string_view const &> ||
 					  std::is_constructible_v<T, std::string_view &&> ||
 					  std::is_constructible_v<T, std::string_view> ||
@@ -580,7 +580,7 @@ inline std::optional<T> ap::detail::result::get() const {
 		out = std::nullopt;
 	};
 
-	auto counter = [&out](size_t value) {
+	auto counter = [&out, this](size_t value) {
 		if constexpr (std::is_constructible_v<T, size_t> || std::is_convertible_v<size_t, T>)
 			out = static_cast<T>(value);
 		else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>)
