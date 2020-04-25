@@ -332,8 +332,6 @@ namespace ap {
 			add(std::move(as)...);
 		}
 
-		inline operator bool() const noexcept { return was_parsed && errors_.empty(); }
-
 		inline parsing_results parse(int argc, char **argv) {
 			parsing_results out(*this);
 			if (was_parsed)
@@ -458,7 +456,9 @@ namespace ap {
 	};
 }  // namespace ap
 
-inline ap::parsing_results::operator bool() const noexcept { return arguments_; }
+inline ap::parsing_results::operator bool() const noexcept {
+	return arguments_.was_parsed && arguments_.errors_.empty();
+}
 inline std::string ap::parsing_results::error_string() const {
 	return std::accumulate(errors().begin(), errors().end(), std::string{});
 }
