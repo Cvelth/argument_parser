@@ -574,6 +574,8 @@ inline std::optional<T> ap::detail::result::get() const {
 				out = static_cast<T>(*converted);
 				return;
 			}
+		} else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>) {
+			return (T)(bool) argument_;
 		}
 		out = std::nullopt;
 	};
@@ -581,6 +583,8 @@ inline std::optional<T> ap::detail::result::get() const {
 	auto counter = [&out](size_t value) {
 		if constexpr (std::is_constructible_v<T, size_t> || std::is_convertible_v<size_t, T>)
 			out = static_cast<T>(value);
+		else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>)
+			return (T)(bool) argument_;
 		else
 			out = std::nullopt;
 	};
