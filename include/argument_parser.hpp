@@ -287,9 +287,15 @@ namespace ap {
 		arguments(arguments &&)		 = default;
 
 		inline void add(detail::argument const &a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			arguments_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		inline void add(detail::argument &&a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			arguments_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		template <typename... Ts>
@@ -304,9 +310,15 @@ namespace ap {
 		}
 
 		inline void add(positional const &a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			positional_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		inline void add(positional &&a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			positional_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		template <typename... Ts>
@@ -319,8 +331,6 @@ namespace ap {
 			add(std::move(a));
 			add(std::move(as)...);
 		}
-
-		inline operator bool() const noexcept { return was_parsed && errors_.empty(); }
 
 		inline parsing_results parse(int argc, char **argv) {
 			parsing_results out(*this);
@@ -446,7 +456,9 @@ namespace ap {
 	};
 }  // namespace ap
 
-inline ap::parsing_results::operator bool() const noexcept { return arguments_; }
+inline ap::parsing_results::operator bool() const noexcept {
+	return arguments_.was_parsed && arguments_.errors_.empty();
+}
 inline std::string ap::parsing_results::error_string() const {
 	return std::accumulate(errors().begin(), errors().end(), std::string{});
 }
@@ -518,7 +530,7 @@ inline std::optional<T> ap::detail::result::get() const {
 
 	auto valueless = [&out]() { out = std::nullopt; };
 
-	auto value = [&out](std::string_view const &value) {
+	auto value = [&out, this](std::string_view const &value) {
 		if constexpr (std::is_constructible_v<T, std::string_view const &> ||
 					  std::is_constructible_v<T, std::string_view &&> ||
 					  std::is_constructible_v<T, std::string_view> ||
@@ -562,13 +574,17 @@ inline std::optional<T> ap::detail::result::get() const {
 				out = static_cast<T>(*converted);
 				return;
 			}
+		} else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>) {
+			return (T)(bool) argument_;
 		}
 		out = std::nullopt;
 	};
 
-	auto counter = [&out](size_t value) {
+	auto counter = [&out, this](size_t value) {
 		if constexpr (std::is_constructible_v<T, size_t> || std::is_convertible_v<size_t, T>)
 			out = static_cast<T>(value);
+		else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>)
+			return (T)(bool) argument_;
 		else
 			out = std::nullopt;
 	};
