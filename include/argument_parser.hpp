@@ -287,9 +287,15 @@ namespace ap {
 		arguments(arguments &&)		 = default;
 
 		inline void add(detail::argument const &a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			arguments_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		inline void add(detail::argument &&a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			arguments_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		template <typename... Ts>
@@ -304,9 +310,15 @@ namespace ap {
 		}
 
 		inline void add(positional const &a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			positional_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		inline void add(positional &&a) {
+			if (was_parsed)
+				errors_.emplace_back("A new argument was added after parsing."
+									 "Undefined behaviour.\n");
 			positional_.emplace_back(std::make_unique<detail::argument>(a));
 		}
 		template <typename... Ts>
