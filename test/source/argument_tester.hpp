@@ -68,6 +68,15 @@ namespace ap {
 			else
 				return result && *result == value;
 		}
+
+	protected:
+		template <typename T>
+		inline bool check_equality(std::optional<T> result, T const &value) {
+			if constexpr (std::is_same_v<T, char const *>)
+				return result && !std::strcmp(*result, value);
+			else
+				return result && *result == value;
+		}
 		
 	protected:
 		ap::parsing_results const &results_;

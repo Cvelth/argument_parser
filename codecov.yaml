@@ -1,3 +1,11 @@
+coverage:
+  precision: 5
+  round: nearest
+  status:
+    project: on
+    patch: off
+    
+
 ignore:
   - "test"
 
