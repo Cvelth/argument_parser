@@ -68,7 +68,7 @@ namespace ap {
 			else
 				return result && *result == value;
 		}
-		
+
 	protected:
 		ap::parsing_results const &results_;
 	};
