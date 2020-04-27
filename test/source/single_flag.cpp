@@ -10,7 +10,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {}))
 			.errors({})
 			.warnings({})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("Unknown argument") {
@@ -18,7 +18,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"-x"}))
 			.errors({"Unknown argument: <-x>.\n"})
 			.warnings({})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("Unknown value") {
@@ -26,7 +26,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"xx"}))
 			.errors({})
 			.warnings({"Value \"xx\" was ignored.\n"})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("<-help> argument ") {
@@ -34,7 +34,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"-help"}))
 			.errors({})
 			.warnings({})
-			.argument("help", true);
+			.argument_is_equal("help", true);
 	}
 
 	SUBCASE("<--help> argument ") {
@@ -42,7 +42,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"--help"}))
 			.errors({})
 			.warnings({})
-			.argument("help", true);
+			.argument_is_equal("help", true);
 	}
 
 	SUBCASE("<---help> argument ") {
@@ -50,7 +50,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"---help"}))
 			.errors({"Unknown argument: <---help>.\n"})
 			.warnings({})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("<help> argument ") {
@@ -58,7 +58,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"help"}))
 			.errors({})
 			.warnings({"Value \"help\" was ignored.\n"})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("<h> argument ") {
@@ -66,7 +66,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"h"}))
 			.errors({})
 			.warnings({"Value \"h\" was ignored.\n"})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("<-h> argument ") {
@@ -74,7 +74,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"-h"}))
 			.errors({})
 			.warnings({})
-			.argument("help", true);
+			.argument_is_equal("help", true);
 	}
 
 	SUBCASE("<--h> argument ") {
@@ -82,7 +82,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {"--h"}))
 			.errors({"Unknown argument: <--h>.\n"})
 			.warnings({})
-			.argument("help", false);
+			.argument_is_equal("help", false);
 	}
 
 	SUBCASE("Non-existing argument") {
@@ -90,7 +90,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 		argument_tester(parse_helper(test_arguments, {}))
 			.errors({})
 			.warnings({})
-			.argument("help", false)
-			.argument("x", ap::fail);
+			.argument_is_equal("help", false)
+			.argument_does_not_exist("x");
 	}
 }

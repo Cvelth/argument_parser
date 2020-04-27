@@ -2,70 +2,79 @@
 #include <doctest/doctest.h>
 
 namespace ap {
-	class argument_tester;
-
-	class fail_t {
-		friend argument_tester;
-
-	public:
-		explicit constexpr fail_t() : value_(true) {}
-		constexpr operator bool() const { return value_; }
-
-	private:
-		explicit constexpr fail_t(bool value) : value_(value) {}
-
-	private:
-		const bool value_;
-	};
-
 	class argument_tester {
 	public:
-		argument_tester(ap::parsing_results const &results) : results_(results) {}
+		inline argument_tester(ap::parsing_results const &results) : results_(results) {}
 
-		argument_tester &errors(std::vector<std::string> expected_errors) {
+		inline argument_tester &errors(std::vector<std::string> expected_errors) {
 			CHECK_EQ(results_.errors(), expected_errors);
 			return *this;
 		}
-		argument_tester &warnings(std::vector<std::string> expected_warnings) {
+		inline argument_tester &warnings(std::vector<std::string> expected_warnings) {
 			CHECK_EQ(results_.warnings(), expected_warnings);
 			return *this;
 		}
 
-		argument_tester &argument(char const *name, fail_t fail_ = fail_t(false)) {
-			auto temp = results_.get(name);
-			if (fail_)
-				CHECK_FALSE(temp);
-			else
-				CHECK(temp);
+		inline argument_tester &no_errors() { return errors({}); }
+		inline argument_tester &no_warnings() { return warnings({}); }
+
+		inline argument_tester &argument_exists(char const *name) {
+			CHECK(results_.get(name));
 			return *this;
 		}
-		template <typename T>
-		argument_tester &argument(char const *name, T const &value, fail_t fail_ = fail_t(false)) {
-			auto temp = results_.get(name);
-			REQUIRE(temp);
-
-			if (fail_)
-				CHECK_NE(*temp, value);
-			else
-				CHECK_EQ(*temp, value);
+		inline argument_tester &argument_does_not_exist(char const *name) {
+			CHECK_FALSE(results_.get(name));
 			return *this;
 		}
 
-		argument_tester &operator()(char const *name, fail_t fail_ = fail_t(false)) {
-			return argument(name, fail_);
+		inline argument_tester &argument_is_equal(char const *name, char const *value) {
+			return argument_is_equal<char const *>(name, value);
+		}
+		inline argument_tester &argument_is_not_equal(char const *name, char const *value) {
+			return argument_is_not_equal<char const *>(name, value);
 		}
 		template <typename T>
-		argument_tester &operator()(char const *name, T const &value,
-									fail_t fail_ = fail_t(false)) {
-			return argument(name, value, fail_);
+		inline argument_tester &argument_is_equal(char const *name, T const &value) {
+			auto result = results_.get(name);
+			REQUIRE(result);
+			CHECK(check_equality(result->get<T>(), value));
+
+			return *this;
+		}
+		template <typename T>
+		inline argument_tester &argument_is_not_equal(char const *name, T const &value) {
+			auto result = results_.get(name);
+			REQUIRE(result);
+			CHECK_FALSE(check_equality(result->get<T>(), value));
+
+			return *this;
+		}
+
+		inline argument_tester &operator()() {
+			no_warnings();
+			return no_errors();
+		}
+		inline argument_tester &operator()(char const *name) { return argument_exists(name); }
+		template <typename T>
+		inline argument_tester &operator()(char const *name, T const &value) {
+			return argument_is_equal(name, value);
+		}
+
+	protected:
+		template <typename T>
+		inline bool check_equality(std::optional<T> result, T const &value) {
+			if constexpr (std::is_same_v<T, char const *>)
+				return result && !std::strcmp(*result, value);
+			else
+				return result && *result == value;
 		}
 
 	protected:
 		ap::parsing_results const &results_;
 	};
 
-	ap::parsing_results parse_helper(ap::arguments &arguments,
-									 std::initializer_list<std::string> &&values) {
+	inline ap::parsing_results parse_helper(ap::arguments &arguments,
+											std::initializer_list<std::string> &&values) {
 		std::vector<std::string> local{std::move(values)};
 		std::string first = "argument_tester";
 
@@ -85,6 +94,4 @@ namespace ap {
 
 		return out;
 	}
-
-	inline constexpr fail_t fail;
 }  // namespace ap
