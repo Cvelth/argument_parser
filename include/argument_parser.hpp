@@ -109,52 +109,52 @@ namespace ap {
 
 		class argument_visitor {
 		public:
-			argument_visitor(
+			inline argument_visitor(
 				std::optional<std::function<void()>> const &_default	  = std::nullopt,
 				std::optional<std::function<void(size_t)>> const &counter = std::nullopt,
 				std::optional<std::function<void(std::string_view const &value)>> const &value =
 					std::nullopt) noexcept
 				: default_(_default), counter_(counter), value_(value) {}
-			argument_visitor(
+			inline argument_visitor(
 				std::optional<std::function<void()>> const &_default = std::nullopt,
 				std::optional<std::function<void(std::string_view const &value)>> const &value =
 					std::nullopt,
 				std::optional<std::function<void(size_t)>> const &counter = std::nullopt) noexcept
 				: default_(_default), counter_(counter), value_(value) {}
 
-			argument_visitor(
+			inline argument_visitor(
 				std::optional<std::function<void(size_t)>> const &counter = std::nullopt,
 				std::optional<std::function<void()>> const &_default	  = std::nullopt,
 				std::optional<std::function<void(std::string_view const &value)>> const &value =
 					std::nullopt) noexcept
 				: default_(_default), counter_(counter), value_(value) {}
-			argument_visitor(
+			inline argument_visitor(
 				std::optional<std::function<void(size_t)>> const &counter = std::nullopt,
 				std::optional<std::function<void(std::string_view const &value)>> const &value =
 					std::nullopt,
 				std::optional<std::function<void()>> const &_default = std::nullopt) noexcept
 				: default_(_default), counter_(counter), value_(value) {}
 
-			argument_visitor(
+			inline argument_visitor(
 				std::optional<std::function<void(std::string_view const &value)>> const &value =
 					std::nullopt,
 				std::optional<std::function<void()>> const &_default	  = std::nullopt,
 				std::optional<std::function<void(size_t)>> const &counter = std::nullopt) noexcept
 				: default_(_default), counter_(counter), value_(value) {}
-			argument_visitor(
+			inline argument_visitor(
 				std::optional<std::function<void(std::string_view const &value)>> const &value =
 					std::nullopt,
 				std::optional<std::function<void(size_t)>> const &counter = std::nullopt,
 				std::optional<std::function<void()>> const &_default	  = std::nullopt) noexcept
 				: default_(_default), counter_(counter), value_(value) {}
 
-			void operator()() const noexcept {
+			inline void operator()() const noexcept {
 				if (default_) (*default_)();
 			}
-			void operator()(size_t value) const noexcept {
+			inline void operator()(size_t value) const noexcept {
 				if (counter_) (*counter_)(value);
 			}
-			void operator()(std::string_view const &value) const noexcept {
+			inline void operator()(std::string_view const &value) const noexcept {
 				if (value_) (*value_)(value);
 			}
 
