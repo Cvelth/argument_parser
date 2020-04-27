@@ -1,5 +1,6 @@
 #pragma once
 #include <charconv>
+#include <cstring>
 #include <functional>
 #include <memory>
 #include <numeric>
@@ -484,14 +485,9 @@ inline ap::detail::result ap::parsing_results::operator[](std::string_view sv) c
 		throw access_error("Unknown argument: <-" + std::string(sv) + ">.");
 }
 
-namespace ap::detail::type_traits {
-	template <class...>
-	constexpr std::false_type always_false{};
-}  // namespace ap::detail::type_traits
-
 namespace ap::detail {
 	template <typename T>
-	std::optional<T> to_type(std::string_view const &value) noexcept {
+	inline std::optional<T> to_type(std::string_view const &value) noexcept {
 		T temp;
 #ifndef _MSC_VER
 		// temporary solution. Should be removed after FP charconv is implemented by the compilers.
@@ -515,83 +511,128 @@ namespace ap::detail {
 		}
 #endif
 	}
-	auto to_real(std::string_view const &value) noexcept { return to_type<long double>(value); }
-	auto to_signed(std::string_view const &value) noexcept { return to_type<long long>(value); }
-	auto to_unsigned(std::string_view const &value) noexcept {
-		return to_type<unsigned long long>(value);
-	}
+
+	namespace type_traits {
+		namespace detail {
+			template <typename T>
+			class only_convertible_to {
+			public:
+				template <typename S, typename = std::enable_if_t<std::is_same_v<T, S>>>
+				operator S() const {
+					return S{};
+				}
+			};
+		}  // namespace detail
+
+		template <typename T, typename... Args>
+		struct is_no_conversion_constructible
+			: std::is_constructible<T, detail::only_convertible_to<Args>...> {};
+
+		template <typename T, typename... Args>
+		constexpr auto is_no_conversion_constructible_v =
+			is_no_conversion_constructible<T, Args...>::value;
+	}  // namespace type_traits
 }  // namespace ap::detail
+
+#if defined(_MSC_VER)
+	#pragma warning(push)
+	#pragma warning(disable : 4244)
+	#pragma warning(disable : 4267)
+#elif defined(__clang__)
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wunused-variable"
+	#pragma clang diagnostic ignored "-Wunused-lambda-capture"
+#elif defined(__GNUG__)
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 template <typename T>
 inline std::optional<T> ap::detail::result::get() const {
-	if constexpr (std::is_same_v<T, bool>) return (bool) argument_;
+	if constexpr (std::is_same_v<T, bool>)
+		return (bool) argument_;
+	else {
+		std::optional<T> out = std::nullopt;
 
-	std::optional<T> out;
+		auto valueless = [/* &out */]() { /*out = std::nullopt; */ };
 
-	auto valueless = [&out]() { out = std::nullopt; };
+		auto value = [&out, this]([[maybe_unused]] std::string_view const &value) {
+			if constexpr (type_traits::is_no_conversion_constructible_v<T, std::string_view>)
+				out = T{value};
+			else if constexpr (type_traits::is_no_conversion_constructible_v<T, std::string>)
+				out = T{std::string(value)};
+			else if constexpr (type_traits::is_no_conversion_constructible_v<T, char const *>)
+				out = T{value.data()};
+			else if constexpr (std::is_arithmetic_v<T> && !std::is_same_v<T, bool>) {
+				if (auto converted = detail::to_type<T>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, signed char>) {
+				if (auto converted = detail::to_type<signed char>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, unsigned char>) {
+				if (auto converted = detail::to_type<unsigned char>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, signed short>) {
+				if (auto converted = detail::to_type<signed short>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, unsigned short>) {
+				if (auto converted = detail::to_type<unsigned short>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, signed int>) {
+				if (auto converted = detail::to_type<signed int>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, unsigned int>) {
+				if (auto converted = detail::to_type<unsigned int>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, signed long>) {
+				if (auto converted = detail::to_type<signed long>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, unsigned long>) {
+				if (auto converted = detail::to_type<unsigned long>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, signed long long>) {
+				if (auto converted = detail::to_type<signed long long>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<
+									 T, unsigned long long>) {
+				if (auto converted = detail::to_type<unsigned long long>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, float>) {
+				if (auto converted = detail::to_type<float>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, double>) {
+				if (auto converted = detail::to_type<double>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, long double>) {
+				if (auto converted = detail::to_type<long double>(value); converted)
+					out = static_cast<T>(*converted);
+			} else if constexpr (type_traits::is_no_conversion_constructible_v<T, bool>)
+				out = static_cast<T>((bool) argument_);
+			// else
+			// out = std::nullopt;
+		};
 
-	auto value = [&out, this](std::string_view const &value) {
-		if constexpr (std::is_constructible_v<T, std::string_view const &> ||
-					  std::is_constructible_v<T, std::string_view &&> ||
-					  std::is_constructible_v<T, std::string_view> ||
-					  std::is_convertible_v<std::string_view const &, T> ||
-					  std::is_convertible_v<std::string_view &&, T> ||
-					  std::is_convertible_v<std::string_view, T>) {
-			out = T{value};
-			return;
-		} else if constexpr (std::is_constructible_v<T, std::string const &> ||
-							 std::is_constructible_v<T, std::string &&> ||
-							 std::is_constructible_v<T, std::string> ||
-							 std::is_convertible_v<std::string const &, T> ||
-							 std::is_convertible_v<std::string &&, T> ||
-							 std::is_convertible_v<std::string, T>) {
-			out = T{std::string(value)};
-			return;
-		} else if constexpr (std::is_constructible_v<T, char const *> ||
-							 std::is_convertible_v<char const *, T>) {
-			out = T{value.data()};
-			return;
-		} else if constexpr (std::is_arithmetic_v<T>) {
-			if (auto converted = detail::to_type<T>(value); converted) {
-				out = static_cast<T>(*converted);
-				return;
-			}
-		} else if constexpr (std::is_constructible_v<T, long double> ||
-							 std::is_convertible_v<long double, T>) {
-			if (auto converted = detail::to_real(value); converted) {
-				out = static_cast<T>(*converted);
-				return;
-			}
-		} else if constexpr (std::is_constructible_v<T, unsigned long long> ||
-							 std::is_convertible_v<unsigned long long, T>) {
-			if (auto converted = detail::to_unsigned(value); converted) {
-				out = static_cast<T>(*converted);
-				return;
-			}
-		} else if constexpr (std::is_constructible_v<T, long long> ||
-							 std::is_convertible_v<long long, T>) {
-			if (auto converted = detail::to_signed(value); converted) {
-				out = static_cast<T>(*converted);
-				return;
-			}
-		} else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>) {
-			return (T)(bool) argument_;
-		}
-		out = std::nullopt;
-	};
+		auto counter = [&out, this]([[maybe_unused]] size_t value) {
+			if constexpr (std::is_constructible_v<T, size_t> || std::is_convertible_v<size_t, T>)
+				out = (T) + value;
+			else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>)
+				out = (T)(bool) argument_;
+			// else
+			// out = std::nullopt;
+		};
 
-	auto counter = [&out, this](size_t value) {
-		if constexpr (std::is_constructible_v<T, size_t> || std::is_convertible_v<size_t, T>)
-			out = static_cast<T>(value);
-		else if constexpr (std::is_constructible_v<T, bool> || std::is_convertible_v<bool, T>)
-			return (T)(bool) argument_;
-		else
-			out = std::nullopt;
-	};
-
-	argument_.visitor_callable(argument_visitor(valueless, value, counter));
-	return out;
+		argument_.visitor_callable(argument_visitor(valueless, value, counter));
+		return out;
+	}
 }
+#if defined(_MSC_VER)
+	#pragma warning(pop)
+#elif defined(__clang__)
+	#pragma clang diagnostic pop
+#elif defined(__GNUG__)
+	#pragma GCC diagnostic pop
+#endif
+
 template <typename T>
 inline T ap::detail::result::as() const {
 	if (auto out = get<T>(); out)
