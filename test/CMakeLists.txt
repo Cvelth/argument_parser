@@ -62,6 +62,6 @@ doctest_discover_tests(argument_parser_tests)
 # ---- code coverage ----
 
 if (ENABLE_TEST_COVERAGE)
-  target_compile_options(argument_parser INTERFACE -O0 -g -fprofile-arcs -ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline -finline-limit=0)
-  target_link_options(argument_parser INTERFACE -fprofile-arcs -ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline -finline-limit=0)
+  target_compile_options(argument_parser INTERFACE -O0 -g -fprofile-arcs -ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline -finline-limit=0 -fkeep-inline-functions -fkeep-static-functions)
+  target_link_options(argument_parser INTERFACE -fprofile-arcs -ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline -finline-limit=0 -fkeep-inline-functions -fkeep-static-functions)
 endif()
