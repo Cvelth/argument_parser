@@ -423,6 +423,9 @@ namespace ap {
 		template <typename Iterator>
 		inline void parse_value(std::string_view const &sv, detail::argument *&active,
 								Iterator &&current_positional) {
+			if (sv.size() >= 2 && sv.front() == '"' && sv.back() == '"')
+				return parse_value(sv.substr(1, sv.size() - 2), active, current_positional);
+
 			if (active) {
 				if (!active->try_call(sv))
 					errors_.emplace_back("Argument <-" + active->name +
