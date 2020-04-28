@@ -23,8 +23,6 @@ jobs:
       run: |
         cd build
         ctest --build-config Debug --progress
-        cd ..
-        rm build
 
     - name: build_release
       run: cmake --build build --config Release -j4
@@ -33,5 +31,3 @@ jobs:
       run: |
         cd build
         ctest --build-config Release --progress
-        cd ..
-        rm build
