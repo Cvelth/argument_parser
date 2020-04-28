@@ -56,8 +56,7 @@ namespace ap {
 		template <typename T>
 		inline argument_tester &argument_is_convertible_to(char const *name) {
 			INFO("while checking whether argument <-" << name << "> is convertible to a type: `"
-													  << detail::get_typename<T>()
-													  << "`");
+													  << detail::get_typename<T>() << "`");
 			auto result = results_.get(name);
 			REQUIRE(result);
 			CHECK(result->get<T>());
@@ -67,8 +66,7 @@ namespace ap {
 		template <typename T>
 		inline argument_tester &argument_is_not_convertible_to(char const *name) {
 			INFO("while checking whether argument <-" << name << "> is not convertible to a type: `"
-													  << detail::get_typename<T>()
-													  << "`");
+													  << detail::get_typename<T>() << "`");
 			auto result = results_.get(name);
 			REQUIRE(result);
 			CHECK_FALSE(result->get<T>());

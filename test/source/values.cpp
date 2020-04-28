@@ -55,7 +55,7 @@ TEST_CASE("Arguments object with a single <-integer> value.") {
 			.argument_is_not_convertible_to<signed char>("integer")
 
 			.argument_is_convertible_to<char const *>("integer")
-			.argument_is_not_convertible_to<char *>("integer") // by design
+			.argument_is_not_convertible_to<char *>("integer")	// by design
 			.argument_is_convertible_to<std::string>("integer")
 			.argument_is_convertible_to<std::string_view>("integer")
 			.argument_is_equal("integer", "")
