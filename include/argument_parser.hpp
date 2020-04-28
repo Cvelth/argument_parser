@@ -502,6 +502,7 @@ namespace ap::detail {
 
 #ifndef _MSC_VER
 		} else {
+			if (value.empty()) return std::nullopt;
 			std::istringstream s(value.data());
 			s >> temp;
 			if (!s)
