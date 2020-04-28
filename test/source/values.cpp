@@ -34,29 +34,44 @@ TEST_CASE("Arguments object with a single <-integer> value.") {
 		argument_tester(parse_helper(test_arguments, {}))
 			.no_errors()
 			.no_warnings()
+
+			.argument_is_convertible_to<bool>("integer")
 			.argument_is_equal("integer", false)
-			.argument_is_not_equal("integer", 0)
-			.argument_is_not_equal("integer", 0u)
-			.argument_is_not_equal("integer", (short) 0)
-			.argument_is_not_equal("integer", (unsigned short) 0)
-			.argument_is_not_equal("integer", 0l)
-			.argument_is_not_equal("integer", 0ul)
-			.argument_is_not_equal("integer", 0ll)
-			.argument_is_not_equal("integer", 0ull)
-			.argument_is_not_equal("integer", 0.0f)
-			.argument_is_not_equal("integer", 0.0)
-			.argument_is_not_equal("integer", 0.0l)
-			.argument_is_not_equal("integer", '\0')
-			.argument_is_not_equal("integer", (unsigned char) 0)
-			.argument_is_not_equal("integer", (signed char) 0)
+
+			.argument_is_not_convertible_to<signed int>("integer")
+			.argument_is_not_convertible_to<unsigned int>("integer")
+			.argument_is_not_convertible_to<signed short>("integer")
+			.argument_is_not_convertible_to<unsigned short>("integer")
+			.argument_is_not_convertible_to<signed long>("integer")
+			.argument_is_not_convertible_to<unsigned long>("integer")
+			.argument_is_not_convertible_to<signed long long>("integer")
+			.argument_is_not_convertible_to<unsigned long long>("integer")
+
+			.argument_is_not_convertible_to<float>("integer")
+			.argument_is_not_convertible_to<double>("integer")
+			.argument_is_not_convertible_to<long double>("integer")
+
+			.argument_is_not_convertible_to<unsigned char>("integer")
+			.argument_is_not_convertible_to<signed char>("integer")
+
+			.argument_is_convertible_to<char const *>("integer")
+			.argument_is_not_convertible_to<char *>("integer") // by design
+			.argument_is_convertible_to<std::string>("integer")
+			.argument_is_convertible_to<std::string_view>("integer")
 			.argument_is_equal("integer", "")
 			.argument_is_equal("integer", std::string{})
 			.argument_is_equal("integer", std::string_view{})
-			.argument_is_not_equal("integer", constructible_from_int{0})
+
+			.argument_is_convertible_to<constructible_from_bool>("integer")
+			.argument_is_convertible_to<constructible_from_string>("integer")
+			.argument_is_convertible_to<constructible_from_string_view>("integer")
+			.argument_is_convertible_to<constructible_from_char_star>("integer")
 			.argument_is_equal("integer", constructible_from_bool{false})
-			.argument_is_not_equal("integer", constructible_from_double{0.0})
 			.argument_is_equal("integer", constructible_from_string{std::string{}})
 			.argument_is_equal("integer", constructible_from_string_view{std::string_view{}})
-			.argument_is_equal("integer", constructible_from_char_star{""});
+			.argument_is_equal("integer", constructible_from_char_star{""})
+
+			.argument_is_not_convertible_to<constructible_from_int>("integer")
+			.argument_is_not_convertible_to<constructible_from_double>("integer");
 	}
 }

@@ -53,6 +53,29 @@ namespace ap {
 			return *this;
 		}
 
+		template <typename T>
+		inline argument_tester &argument_is_convertible_to(char const *name) {
+			INFO("while checking whether argument <-" << name << "> is convertible to a type: `"
+													  << detail::get_typename<T>()
+													  << "`");
+			auto result = results_.get(name);
+			REQUIRE(result);
+			CHECK(result->get<T>());
+
+			return *this;
+		}
+		template <typename T>
+		inline argument_tester &argument_is_not_convertible_to(char const *name) {
+			INFO("while checking whether argument <-" << name << "> is not convertible to a type: `"
+													  << detail::get_typename<T>()
+													  << "`");
+			auto result = results_.get(name);
+			REQUIRE(result);
+			CHECK_FALSE(result->get<T>());
+
+			return *this;
+		}
+
 		inline argument_tester &argument_is_equal(char const *name, char const *value) {
 			return argument_is_equal<char const *>(name, value);
 		}
@@ -95,7 +118,7 @@ namespace ap {
 	protected:
 		template <typename T>
 		inline bool check_equality(std::optional<T> result, T const &value) {
-			if constexpr (std::is_same_v<T, char const *>)
+			if constexpr (std::is_same_v<T, char const *> || std::is_same_v<T, char *>)
 				return result && !std::strcmp(*result, value);
 			else if constexpr (std::is_floating_point_v<T>)
 				return result && std::fabs(*result - value) <=
