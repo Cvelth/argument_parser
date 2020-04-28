@@ -1,5 +1,29 @@
 #pragma once
+#include <algorithm>
+#include <cmath>
 #include <doctest/doctest.h>
+
+#ifdef __GNUG__
+	#include <cstdlib>
+	#include <cxxabi.h>
+	#include <memory>
+
+namespace ap::detail {
+	inline std::string demangle(const char *name) {
+		int status = -1;
+		std::unique_ptr<char, void (*)(void *)> res{abi::__cxa_demangle(name, NULL, NULL, &status),
+													std::free};
+		return (status == 0) ? res.get() : name;
+	}
+#else
+namespace ap::detail {
+	inline std::string demangle(const char *name) { return name; }
+#endif
+	template <typename T>
+	inline std::string get_typename() {
+		return demangle(typeid(T).name());
+	}
+}
 
 namespace ap {
 	class argument_tester {
@@ -7,10 +31,12 @@ namespace ap {
 		inline argument_tester(ap::parsing_results const &results) : results_(results) {}
 
 		inline argument_tester &errors(std::vector<std::string> expected_errors) {
+			INFO("while checking errors with: " + results_.error_string());
 			CHECK_EQ(results_.errors(), expected_errors);
 			return *this;
 		}
 		inline argument_tester &warnings(std::vector<std::string> expected_warnings) {
+			INFO("while checking warnings with: " + results_.warning_string());
 			CHECK_EQ(results_.warnings(), expected_warnings);
 			return *this;
 		}
@@ -35,6 +61,9 @@ namespace ap {
 		}
 		template <typename T>
 		inline argument_tester &argument_is_equal(char const *name, T const &value) {
+			INFO("while checking whether argument <-" << name << "> is equal with a value of type `"
+													  << detail::get_typename<T>()
+													  << "`: " << value);
 			auto result = results_.get(name);
 			REQUIRE(result);
 			CHECK(check_equality(result->get<T>(), value));
@@ -43,6 +72,9 @@ namespace ap {
 		}
 		template <typename T>
 		inline argument_tester &argument_is_not_equal(char const *name, T const &value) {
+			INFO("while checking whether argument <-"
+				 << name << "> is not equal with a value of type `" << detail::get_typename<T>()
+				 << "`: " << value);
 			auto result = results_.get(name);
 			REQUIRE(result);
 			CHECK_FALSE(check_equality(result->get<T>(), value));
@@ -65,6 +97,10 @@ namespace ap {
 		inline bool check_equality(std::optional<T> result, T const &value) {
 			if constexpr (std::is_same_v<T, char const *>)
 				return result && !std::strcmp(*result, value);
+			else if constexpr (std::is_floating_point_v<T>)
+				return result && std::fabs(*result - value) <=
+									 std::numeric_limits<T>::epsilon() *
+										 (1.0 + std::max(std::fabs(*result), std::fabs(value)));
 			else
 				return result && *result == value;
 		}
