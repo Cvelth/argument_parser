@@ -1,12 +1,12 @@
 name: Windows
 
-on: [push]
+on: [push, pull_request]
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
 
 jobs:
-  build:
+  test:
 
     runs-on: windows-latest
     
@@ -16,10 +16,22 @@ jobs:
     - name: configure
       run: cmake -Htest -Bbuild
 
-    - name: build
+    - name: build_debug
       run: cmake --build build --config Debug -j4
 
-    - name: test
+    - name: test_debug
       run: |
         cd build
-        ctest --build-config Debug
+        ctest --build-config Debug --progress
+        cd ..
+        rm build
+
+    - name: build_release
+      run: cmake --build build --config Release -j4
+
+    - name: test_release
+      run: |
+        cd build
+        ctest --build-config Release --progress
+        cd ..
+        rm build
