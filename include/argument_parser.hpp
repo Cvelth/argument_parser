@@ -505,7 +505,7 @@ namespace ap::detail {
 			if (value.empty()) return std::nullopt;
 			std::istringstream s(value.data());
 			s >> temp;
-			if (!s)
+			if (s.eof())
 				return temp;
 			else
 				return std::nullopt;
