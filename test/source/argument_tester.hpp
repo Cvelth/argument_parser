@@ -23,7 +23,7 @@ namespace ap::detail {
 	inline std::string get_typename() {
 		return demangle(typeid(T).name());
 	}
-}
+}  // namespace ap::detail
 
 namespace ap {
 	class argument_tester {
@@ -87,7 +87,9 @@ namespace ap {
 													  << "`: " << value);
 			auto result = results_.get(name);
 			REQUIRE(result);
-			CHECK(check_equality(result->get<T>(), value));
+			auto result_value = result->get<T>();
+			REQUIRE(result_value);
+			CHECK(check_equality(*result_value, value));
 
 			return *this;
 		}
@@ -98,7 +100,9 @@ namespace ap {
 				 << "`: " << value);
 			auto result = results_.get(name);
 			REQUIRE(result);
-			CHECK_FALSE(check_equality(result->get<T>(), value));
+			auto result_value = result->get<T>();
+			REQUIRE(result_value);
+			CHECK_FALSE(check_equality(*result_value, value));
 
 			return *this;
 		}
@@ -115,15 +119,14 @@ namespace ap {
 
 	protected:
 		template <typename T>
-		inline bool check_equality(std::optional<T> result, T const &value) {
+		inline bool check_equality(T const &lhs, T const &rhs) {
 			if constexpr (std::is_same_v<T, char const *> || std::is_same_v<T, char *>)
-				return result && !std::strcmp(*result, value);
+				return !std::strcmp(lhs, rhs);
 			else if constexpr (std::is_floating_point_v<T>)
-				return result && std::fabs(*result - value) <=
-									 std::numeric_limits<T>::epsilon() *
-										 (1.0 + std::max(std::fabs(*result), std::fabs(value)));
+				return std::fabs(lhs - rhs) <= std::numeric_limits<T>::epsilon() *
+												   (1.0 + std::max(std::fabs(lhs), std::fabs(rhs)));
 			else
-				return result && *result == value;
+				return lhs == rhs;
 		}
 
 	protected:
