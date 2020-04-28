@@ -5,7 +5,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 	using namespace ap;
 	arguments test_arguments{flag{"help", "-help", "h"}};
 
-	SUBCASE("No arguments") {
+	SUBCASE("Passing no arguments") {
 		// ./executable
 		argument_tester(parse_helper(test_arguments, {}))
 			.errors({})
@@ -13,7 +13,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("Unknown argument") {
+	SUBCASE("Passing a single unknown argument") {
 		// ./executable -x
 		argument_tester(parse_helper(test_arguments, {"-x"}))
 			.errors({"Unknown argument: <-x>.\n"})
@@ -21,7 +21,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("Unknown value") {
+	SUBCASE("Passing a single unknown value") {
 		// ./executable xx
 		argument_tester(parse_helper(test_arguments, {"xx"}))
 			.errors({})
@@ -29,7 +29,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("<-help> argument ") {
+	SUBCASE("Passing a single <-help> argument ") {
 		// ./executable -help
 		argument_tester(parse_helper(test_arguments, {"-help"}))
 			.errors({})
@@ -37,7 +37,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", true);
 	}
 
-	SUBCASE("<--help> argument ") {
+	SUBCASE("Passing a single <--help> argument ") {
 		// ./executable --help
 		argument_tester(parse_helper(test_arguments, {"--help"}))
 			.errors({})
@@ -45,7 +45,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", true);
 	}
 
-	SUBCASE("<---help> argument ") {
+	SUBCASE("Passing a single <---help> argument ") {
 		// ./executable ---help
 		argument_tester(parse_helper(test_arguments, {"---help"}))
 			.errors({"Unknown argument: <---help>.\n"})
@@ -53,7 +53,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("<help> argument ") {
+	SUBCASE("Passing a single <help> argument ") {
 		// ./executable help
 		argument_tester(parse_helper(test_arguments, {"help"}))
 			.errors({})
@@ -61,7 +61,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("<h> argument ") {
+	SUBCASE("Passing a single <h> argument ") {
 		// ./executable h
 		argument_tester(parse_helper(test_arguments, {"h"}))
 			.errors({})
@@ -69,7 +69,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("<-h> argument ") {
+	SUBCASE("Passing a single <-h> argument ") {
 		// ./executable -h
 		argument_tester(parse_helper(test_arguments, {"-h"}))
 			.errors({})
@@ -77,7 +77,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", true);
 	}
 
-	SUBCASE("<--h> argument ") {
+	SUBCASE("Passing a single <--h> argument ") {
 		// ./executable --h
 		argument_tester(parse_helper(test_arguments, {"--h"}))
 			.errors({"Unknown argument: <--h>.\n"})
@@ -85,7 +85,7 @@ TEST_CASE("Arguments object with a single <-help> flag.") {
 			.argument_is_equal("help", false);
 	}
 
-	SUBCASE("Non-existing argument") {
+	SUBCASE("Passing a single non-existing argument") {
 		// ./executable
 		argument_tester(parse_helper(test_arguments, {}))
 			.errors({})
