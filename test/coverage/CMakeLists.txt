@@ -22,8 +22,8 @@ FILE(GLOB_RECURSE test_source_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DI
 
 add_custom_command(
   OUTPUT argument_parser.cpp
-  COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py -i ${CMAKE_CURRENT_SOURCE_DIR}/../../include -s ${CMAKE_CURRENT_SOURCE_DIR}/../source -f argument_parser -o .
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py ${include_files} ${test_include_files} ${test_source_files}  
+  COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py --include=${CMAKE_CURRENT_SOURCE_DIR}/../../include --source="${CMAKE_CURRENT_SOURCE_DIR}/../include,${CMAKE_CURRENT_SOURCE_DIR}/../source" --filename=argument_parser
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py ${include_files} ${test_include_files} ${test_source_files}
   COMMENT "Creating single cpp file."
 )
 add_executable(argument_parser_coverage_tests argument_parser.cpp)

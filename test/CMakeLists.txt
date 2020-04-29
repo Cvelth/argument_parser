@@ -37,6 +37,7 @@ CPMAddPackage(
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
 add_executable(argument_parser_tests ${sources})
+target_include_directories(argument_parser_tests PUBLIC include)
 target_link_libraries(argument_parser_tests doctest argument_parser)
 
 set_target_properties(argument_parser_tests PROPERTIES CXX_STANDARD 20)
