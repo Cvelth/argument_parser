@@ -3,7 +3,7 @@ coverage:
   round: nearest
   status:
     project: on
-    patch: off
+    patch: on
     
 
 ignore:

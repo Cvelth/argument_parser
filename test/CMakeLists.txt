@@ -6,7 +6,6 @@ project(argument_parser_tests
 
 # ---- Options ----
 
-option(ENABLE_TEST_COVERAGE "Enable test coverage" OFF)
 option(TEST_INSTALLED_VERSION "Test the version found by find_package" OFF)
 
 # ---- Dependencies ----
@@ -58,10 +57,3 @@ ENABLE_TESTING()
 
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
 doctest_discover_tests(argument_parser_tests)
-
-# ---- code coverage ----
-
-if (ENABLE_TEST_COVERAGE)
-  target_compile_options(argument_parser INTERFACE -O0 -g -fprofile-arcs -ftest-coverage)
-  target_link_options(argument_parser INTERFACE -fprofile-arcs -ftest-coverage)
-endif()

@@ -1,12 +1,13 @@
-name: Ubuntu
+name: TestCoverage
 
 on: [push, pull_request]
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
-  test:
+  upload_test_coverage:
 
     runs-on: ubuntu-latest
     
@@ -20,22 +21,22 @@ jobs:
         sudo apt-get install -y gcc-9
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
+        sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-9 100
     
     - name: configure
-      run: cmake -Htest -Bbuild
+      run: cmake -Htest/coverage -Bbuild
 
-    - name: build_debug
+    - name: build
       run: cmake --build build --config Debug -j4
 
-    - name: test_debug
+    - name: test
       run: |
         cd build
-        ctest --build-config Debug --progress
+        ctest --build-config Debug
+        cd ..
+    
+    - name: ready test coverage
+      run: python3 test/coverage/prepare_to_upload.py argument_parser.cpp
 
-    - name: build_release
-      run: cmake --build build --config Release -j4
-
-    - name: test_release
-      run: |
-        cd build
-        ctest --build-config Release --progress
+    - name: upload test coverage
+      run: curl -s https://codecov.io/bash | bash -s -- -f build/test_coverage/argument_parser.hpp.gcov
