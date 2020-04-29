@@ -39,4 +39,4 @@ jobs:
       run: python3 test/coverage/prepare_to_upload.py argument_parser.cpp
 
     - name: upload test coverage
-      run: curl -s https://codecov.io/bash | bash -s -- -f build/coverage/argument_parser.hpp.gcov
+      run: curl -s https://codecov.io/bash | bash -s -- -f build/test_coverage/argument_parser.hpp.gcov
