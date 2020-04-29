@@ -1,20 +1,20 @@
 # Cvelth <Cvelth.mail@gmail.com> © 2020
-# version 0.2
+# version 0.2.1
 
 import argparse
 import re
 from pathlib import Path
 
 parser = argparse.ArgumentParser(description='Concatenates all the files from two paths into a single file.')
-parser.add_argument('--include', '-i', help='include paths, separator: \';\'')
-parser.add_argument('--source', '-s', help='source paths, separator: \';\'')
+parser.add_argument('--include', '-i', help='include paths, separator: \',\'')
+parser.add_argument('--source', '-s', help='source paths, separator: \',\'')
 parser.add_argument('--output', '-o', help='output path', default='.')
 parser.add_argument('--filename', '-f', help='output filename', default='output')
 
 args = parser.parse_args()
 
-includes = args.include.split(';')
-sources = args.source.split(';')
+includes = args.include.split(',')
+sources = args.source.split(',')
 output = args.output
 name = args.filename + '.cpp'
 
