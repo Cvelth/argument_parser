@@ -36,8 +36,7 @@ jobs:
         cd ..
     
     - name: ready test coverage
-      run: |
-        python3 test/coverage/prepare_to_upload.py argument_parser.cpp -o argument_parser.hpp -l argument_parser.hpp
+      run: python3 test/coverage/prepare_to_upload.py argument_parser.cpp
 
     - name: upload test coverage
       run: curl -s https://codecov.io/bash | bash -s -- -f build/coverage/argument_parser.hpp.gcov

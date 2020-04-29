@@ -1,5 +1,5 @@
 # Cvelth <Cvelth.mail@gmail.com> © 2020
-# version 0.1
+# version 0.2.0.1
 
 import argparse
 import os
@@ -8,16 +8,11 @@ import re
 
 parser = argparse.ArgumentParser(description='Runs gcov and uploads results to codecov.')
 parser.add_argument('filename', help='input filename')
-parser.add_argument('--output', '-o', help='target file name')
-parser.add_argument('--limit', '-l', help='limits output to specified file(s)')
 
 args = parser.parse_args()
 
 gcda = list(Path('.').rglob(args.filename + '.gcda'))
 gcno = list(Path('.').rglob(args.filename + '.gcno'))
-
-if (args.limit):
-    included_files = args.limit.split(';')
 
 if (len(gcda) == 1):
     gcda = gcda[0]
@@ -31,39 +26,51 @@ else:
     print('Error: ' + args.filename + '.gcno file not found.')
     os._exit(2)
 
-Path('build/gcov').mkdir(exist_ok=True)
-os.chdir('build/gcov')
-os.system('gcov ' + '../../' + str(gcda)[:str(gcda).rfind(".")] + '.cpp')
+Path('build').mkdir(exist_ok=True)
+Path('build/test_coverage').mkdir(exist_ok=True)
+Path('build/test_coverage/gcov').mkdir(exist_ok=True)
+os.chdir('build/test_coverage/gcov')
+os.system('gcov ' + '../../../' + str(gcda)[:str(gcda).rfind('.')] + '.cpp')
 
-Path('../coverage').mkdir(exist_ok=True)
-
-input = open(args.filename + '.gcov', "r")
-if (args.output):
-    output = open('../coverage/' + args.output + '.gcov', "w")
-else:
-    output = open('../coverage/' + args.filename + '.gcov', "w")
+input = open(args.filename + '.gcov', 'r')
 
 current_file = None
-current_file_full = None
-output_enabled = True
-def to_output(line):
-    if (args.limit):
-        global output_enabled
-        m = re.search('@to_single_cpp (?:include|source)_file_begin ([^ ]+) \((.*)\)', line)
-        if (m):
-            current_file = m.group(1)
-            current_file_full = m.group(2)
-            if (current_file in included_files or current_file_full in included_files):
-                print ('Including ' + current_file + ' (' + current_file_full + ')')
-                output_enabled = True
-            else:
-                print ('Ignoring ' + current_file + ' (' + current_file_full + ')')
-                output_enabled = False
-
-        return output_enabled
-    else:
-        return True
-
+line_shift = 0
+file_header = ''
 for line in input:
-    if (to_output(line)):
-        output.write(line)
+    m = re.match('^(.*):([0-9 ]+):(.*)$', line)
+    if (m):
+        if (int(m.group(2)) == 0):
+            mm = re.match('^([a-zA-Z]+):(.*)$', m.group(3))
+            if (mm):
+                if (mm.group(1) == "Source"):
+                    file_header += m.group(1) + ':' + m.group(2) + ':' + mm.group(1) + ':{@current_full_path}\n'
+                elif (mm.group(1) == "Graph"):
+                    file_header += m.group(1) + ':' + m.group(2) + ':' + mm.group(1) + ':{@gcno_full_path}\n'
+                elif (mm.group(1) == "Data"):
+                    file_header += m.group(1) + ':' + m.group(2) + ':' + mm.group(1) + ':{@gcda_full_path}\n'
+                else:
+                    file_header += line
+            else:
+                file_header += line
+        else:
+            mm = re.match('^// @to_remove @(?:include|source)_file_begin ([^ ]+) \((.*)\)(?:.*)$', m.group(3))
+            if (mm):
+                print ("Processing " + mm.group(1) + '.gcov')
+                current_file = open('../' + mm.group(1) + '.gcov', 'w')
+                line_shift = int(m.group(2))
+
+                temp = re.sub('{@current_full_path}', mm.group(2), file_header)
+                temp = re.sub('{@gcno_full_path}', re.sub(args.filename, mm.group(1), str(gcno)), temp)
+                temp = re.sub('{@gcda_full_path}', re.sub(args.filename, mm.group(1), str(gcda)), temp)
+                current_file.write(temp)
+            elif (re.search('@to_remove', m.group(3))):
+                continue
+            else:
+                mm = re.match('^// @to_restore (.*)$', m.group(3))
+                if (mm):
+                    current_file.write(m.group(1) + ':' + str(int(m.group(2)) - line_shift).rjust(len(m.group(2))) + ':' + mm.group(1) + '\n')
+                else:
+                    current_file.write(m.group(1) + ':' + str(int(m.group(2)) - line_shift).rjust(len(m.group(2))) + ':' + m.group(3) + '\n')
+    else:
+        current_file.write(line)
