@@ -16,12 +16,14 @@ CPMAddPackage(
 
 # ---- Create binary ----
 
-message(${CMAKE_CURRENT_SOURCE_DIR})
+FILE(GLOB_RECURSE include_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.{h,hpp}")
+FILE(GLOB_RECURSE test_include_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../include/*.{h,hpp}")
+FILE(GLOB_RECURSE test_source_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../source/*.{h,hpp,cpp}")
 
 add_custom_command(
   OUTPUT argument_parser.cpp
   COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py -i ${CMAKE_CURRENT_SOURCE_DIR}/../../include -s ${CMAKE_CURRENT_SOURCE_DIR}/../source -f argument_parser -o .
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/to_single_cpp.py ${include_files} ${test_include_files} ${test_source_files}  
   COMMENT "Creating single cpp file."
 )
 add_executable(argument_parser_coverage_tests argument_parser.cpp)
