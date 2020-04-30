@@ -1,30 +1,6 @@
 #include "argument_parser.hpp"
 #include "argument_tester.hpp"
 
-template <typename type>
-class constructible_from_type {
-public:
-	explicit constexpr constructible_from_type(type const &v) : value_(v) {}
-	constexpr bool operator==(constructible_from_type<type> const &o) const {
-		return value_ == o.value_;
-	}
-
-protected:
-	type value_;
-};
-using constructible_from_int		 = constructible_from_type<int>;
-using constructible_from_bool		 = constructible_from_type<bool>;
-using constructible_from_double		 = constructible_from_type<double>;
-using constructible_from_string		 = constructible_from_type<std::string>;
-using constructible_from_string_view = constructible_from_type<std::string_view>;
-class constructible_from_char_star : public constructible_from_type<char const *> {
-public:
-	using constructible_from_type<char const *>::constructible_from_type;
-	bool operator==(constructible_from_char_star const &o) const {
-		return !std::strcmp(value_, o.value_);
-	}
-};
-
 TEST_CASE("Arguments object with a single <-value> option and no input.") {
 	auto check = [](ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
 		ap::argument_tester(parse_helper(test_arguments, std::move(inputs)))
