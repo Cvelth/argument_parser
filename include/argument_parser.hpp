@@ -345,7 +345,7 @@ namespace ap {
 			for (int i = 1; i < argc; i++) {
 				std::string_view current = argv[i];
 				if (current.size())
-					if (current[0] == '-')
+					if (is_argument(current))
 						if (auto pos = current.find_first_of('='); pos != std::string::npos) {
 							parse_argument(current.substr(1, pos - 1), active);
 							parse_value(current.substr(pos + 1), active,
@@ -441,6 +441,13 @@ namespace ap {
 										 "\" was given.\n");
 			else
 				warnings_.emplace_back("Value \"" + std::string(sv) + "\" was ignored.\n");
+		}
+
+		inline bool is_argument(std::string_view const &current) {
+			return (current.size() > 1) && (current[0] == '-') &&
+				   ((current[1] > 'A' && current[1] < 'Z') ||
+					(current[1] > 'a' && current[1] < 'z') || current[1] == '-' ||
+					current[1] == '_');
 		}
 
 	private:
