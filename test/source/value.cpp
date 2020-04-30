@@ -25,9 +25,8 @@ public:
 	}
 };
 
-namespace tests {
-	void no_argument_test(ap::arguments &test_arguments,
-						  std::initializer_list<std::string> &&inputs) {
+TEST_CASE("Arguments object with a single <-value> option and no input.") {
+	auto check = [](ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
 		ap::argument_tester(parse_helper(test_arguments, std::move(inputs)))
 			.no_errors()
 			.no_warnings()
@@ -70,8 +69,18 @@ namespace tests {
 
 			.argument_is_not_convertible_to<constructible_from_int>("value")
 			.argument_is_not_convertible_to<constructible_from_double>("value");
+	};
+
+	using namespace ap;
+	arguments test_arguments{value{"value"}};
+	SUBCASE("Passing no arguments") {
+		// ./executable
+		check(test_arguments, {});
 	}
-	auto string_test(ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
+}
+
+TEST_CASE("Arguments object with a single <-value> option and string input.") {
+	auto check = [](ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
 		ap::argument_tester(parse_helper(test_arguments, std::move(inputs)))
 			.no_errors()
 			.no_warnings()
@@ -116,7 +125,21 @@ namespace tests {
 			.argument_is_not_convertible_to<constructible_from_int>("value")
 			.argument_is_not_convertible_to<constructible_from_double>("value");
 	};
-	auto integer_test(ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
+
+	using namespace ap;
+	arguments test_arguments{value{"value"}};
+	SUBCASE("using \"=\"") {
+		// ./executable -value="hello world"
+		check(test_arguments, {"-value=\"hello world\""});
+	}
+	SUBCASE("using \" \"") {
+		// ./executable -value "hello world"
+		check(test_arguments, {"-value", "hello world"});
+	}
+}
+
+TEST_CASE("Arguments object with a single <-value> option and integer input.") {
+	auto check = [](ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
 		ap::argument_tester(parse_helper(test_arguments, std::move(inputs)))
 			.no_errors()
 			.no_warnings()
@@ -174,8 +197,22 @@ namespace tests {
 			.argument_is_convertible_to<constructible_from_double>("value")
 			.argument_is_equal("value", constructible_from_int{42})
 			.argument_is_equal("value", constructible_from_double{42.0});
+	};
+
+	using namespace ap;
+	arguments test_arguments{value{"value"}};
+	SUBCASE("using \"=\"") {
+		// ./executable -value=42
+		check(test_arguments, {"-value=42"});
 	}
-	auto signed_test(ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
+	SUBCASE("using \" \"") {
+		// ./executable -value 42
+		check(test_arguments, {"-value", "42"});
+	}
+}
+
+TEST_CASE("Arguments object with a single <-value> option and singed integer input.") {
+	auto check = [](ap::arguments &test_arguments, std::initializer_list<std::string> &&inputs) {
 		ap::argument_tester(parse_helper(test_arguments, std::move(inputs)))
 			.no_errors()
 			.no_warnings()
@@ -230,42 +267,16 @@ namespace tests {
 			.argument_is_convertible_to<constructible_from_double>("value")
 			.argument_is_equal("value", constructible_from_int{-42})
 			.argument_is_equal("value", constructible_from_double{-42.0});
-	}
-}  // namespace tests
+	};
 
-TEST_CASE("Arguments object with a single <-value> option.") {
 	using namespace ap;
 	arguments test_arguments{value{"value"}};
-
-	SUBCASE("Passing no arguments") {
-		// ./executable
-		tests::no_argument_test(test_arguments, {});
-	}
-
-	SUBCASE("Passing a single string argument (first test)") {
-		// ./executable -value="hello world"
-		tests::string_test(test_arguments, {"-value=\"hello world\""});
-	}
-	SUBCASE("Passing a single string argument (second test)") {
-		// ./executable -value "hello world"
-		tests::string_test(test_arguments, {"-value", "hello world"});
-	}
-
-	SUBCASE("Passing a single integer argument (first test)") {
-		// ./executable -value=42
-		tests::integer_test(test_arguments, {"-value=42"});
-	}
-	SUBCASE("Passing a single integer argument (second test)") {
-		// ./executable -value 42
-		tests::integer_test(test_arguments, {"-value", "42"});
-	}
-
-	SUBCASE("Passing a single signed integer argument (first test)") {
+	SUBCASE("using \"=\"") {
 		// ./executable -value=-42
-		tests::signed_test(test_arguments, {"-value=-42"});
+		check(test_arguments, {"-value=-42"});
 	}
-	SUBCASE("Passing a single signed integer argument (second test)") {
+	SUBCASE("using \" \"") {
 		// ./executable -value -42
-		tests::signed_test(test_arguments, {"-value", "-42"});
+		check(test_arguments, {"-value", "-42"});
 	}
 }
