@@ -1,0 +1,78 @@
+name: Sanitizers
+
+on: [push, pull_request]
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+jobs:
+  gcc:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: install gcc-9
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install -y gcc-9
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
+    
+    - name: address_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Address
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
+    
+    - name: memory_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Memory
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
+    
+    - name: memory_with_origins_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
+        
+    - name: undefined_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Undefined
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
+        
+    - name: thread_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Thread
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
+        
+    - name: leak_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Leak
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
+        
+    - name: address_undefined_sanitizer
+      run: |
+        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER='Address;Undefined'
+        cmake --build build --config Debug -j4
+        cd build
+        ctest --build-config Debug
+        cd ..
