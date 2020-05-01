@@ -3,7 +3,7 @@
 
 TEST_CASE("Arguments object with a single <-help> flag.") {
 	using namespace ap;
-	arguments test_arguments{flag{"help", "-help", "h"}};
+	arguments test_arguments(flag("help", "-help", "h"));
 
 	SUBCASE("Passing no arguments") {
 		// ./executable

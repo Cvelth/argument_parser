@@ -48,7 +48,7 @@ TEST_CASE("Arguments object with a single <-value> option and no input.") {
 	};
 
 	using namespace ap;
-	arguments test_arguments{value{"value"}};
+	arguments test_arguments(value("value"));
 	SUBCASE("Passing no arguments") {
 		// ./executable
 		check(test_arguments, {});
@@ -103,7 +103,7 @@ TEST_CASE("Arguments object with a single <-value> option and string input.") {
 	};
 
 	using namespace ap;
-	arguments test_arguments{value{"value"}};
+	arguments test_arguments(value("value"));
 	SUBCASE("using \"=\"") {
 		// ./executable -value="hello world"
 		check(test_arguments, {"-value=\"hello world\""});
@@ -176,7 +176,7 @@ TEST_CASE("Arguments object with a single <-value> option and integer input.") {
 	};
 
 	using namespace ap;
-	arguments test_arguments{value{"value"}};
+	arguments test_arguments(value("value"));
 	SUBCASE("using \"=\"") {
 		// ./executable -value=42
 		check(test_arguments, {"-value=42"});
@@ -246,7 +246,7 @@ TEST_CASE("Arguments object with a single <-value> option and singed integer inp
 	};
 
 	using namespace ap;
-	arguments test_arguments{value{"value"}};
+	arguments test_arguments(value("value"));
 	SUBCASE("using \"=\"") {
 		// ./executable -value=-42
 		check(test_arguments, {"-value=-42"});
@@ -308,7 +308,7 @@ TEST_CASE("Arguments object with a single <-value> option and floating point inp
 	};
 
 	using namespace ap;
-	arguments test_arguments{value{"value"}};
+	arguments test_arguments(value("value"));
 	SUBCASE("using \"=\"") {
 		// ./executable -value=4.2
 		check(test_arguments, {"-value=4.2"});
@@ -370,7 +370,7 @@ TEST_CASE("Arguments object with a single <-value> option and signed floating po
 	};
 
 	using namespace ap;
-	arguments test_arguments{value{"value"}};
+	arguments test_arguments(value("value"));
 	SUBCASE("using \"=\"") {
 		// ./executable -value=-.42
 		check(test_arguments, {"-value=-.42"});

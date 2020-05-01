@@ -3,7 +3,7 @@
 
 TEST_CASE("Arguments object with a single <-counter> argument.") {
 	using namespace ap;
-	arguments test_arguments{counter{"counter", "-counter", "c", "x"}};
+	arguments test_arguments(counter("counter", "-counter", "c", "x"));
 
 	SUBCASE("Passing no arguments") {
 		// ./executable
