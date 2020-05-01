@@ -95,10 +95,8 @@ jobs:
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 100
         sudo update-alternatives --remove cc /usr/bin/cc
         sudo update-alternatives --remove c++ /usr/bin/c++
-        sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100
-        sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100
-#       sudo update-alternatives --set cc /usr/bin/clang
-#       sudo update-alternatives --set c++ /usr/bin/clang++
+        sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100
+        sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
     
     - name: address_sanitizer
       run: |
