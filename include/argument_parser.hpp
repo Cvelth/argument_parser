@@ -30,6 +30,8 @@ namespace ap {
 		public:
 			[[nodiscard]] inline operator bool() const noexcept { return was_activated; }
 
+			using pointer = std::unique_ptr<argument, void (*)(void *)>;
+
 		protected:
 			template <typename... Ts>
 			inline explicit argument(
@@ -42,6 +44,11 @@ namespace ap {
 				  visitor_callable(visitor_callable ? visitor_callable
 													: [](auto const &v) { return v(); }),
 				  was_activated(false) {}
+
+			template <typename T>
+			inline static pointer wrap(T *&&pointer) {
+				return {pointer, [](void *t) { delete (T *) t; }};
+			}
 
 		protected:
 			[[nodiscard]] inline bool is_callable() const noexcept {
@@ -79,6 +86,7 @@ namespace ap {
 
 			bool was_activated;
 		};
+		using argument_container = std::vector<argument::pointer>;
 
 		class argument_visitor {
 		public:
@@ -159,11 +167,11 @@ namespace ap {
 		class callable : public argument {
 		public:
 			template <typename... Ts>
-			inline static std::unique_ptr<argument> create(
+			inline static argument::pointer create(
 				std::function<void()> const &no_value_callable,
 				std::function<void(std::string_view const &)> const &value_callable,
 				std::string const &t, Ts const &... ts) noexcept {
-				return std::unique_ptr<argument>(
+				return argument::wrap(
 					new callable(no_value_callable, value_callable, std::nullopt, t, ts...));
 			}
 
@@ -174,9 +182,9 @@ namespace ap {
 		class flag : public argument {
 		public:
 			template <typename... Ts>
-			inline static std::unique_ptr<argument> create(std::string const &t,
-														   Ts const &... ts) noexcept {
-				return std::unique_ptr<argument>(new flag(t, ts...));
+			inline static argument::pointer create(std::string const &t,
+												   Ts const &... ts) noexcept {
+				return argument::wrap(new flag(t, ts...));
 			}
 
 		protected:
@@ -185,14 +193,35 @@ namespace ap {
 				: argument([]() {}, std::nullopt, std::nullopt, t, ts...) {}
 		};
 
+		class counter : public argument {
+			friend result;
+
+		public:
+			template <typename... Ts>
+			inline static argument::pointer create(std::string const &t,
+												   Ts const &... ts) noexcept {
+				return argument::wrap(new counter(t, ts...));
+			}
+
+		protected:
+			template <typename... Ts>
+			inline explicit counter(std::string const &t, Ts const &... ts) noexcept
+				: argument([this]() { ++value_; }, std::nullopt,
+						   [this](auto const &v) { return v(value_); }, t, ts...),
+				  value_(0u) {}
+
+		protected:
+			std::size_t value_;
+		};
+
 		class value : public argument {
 			friend result;
 
 		public:
 			template <typename... Ts>
-			inline static std::unique_ptr<argument> create(std::string const &t,
-														   Ts const &... ts) noexcept {
-				return std::unique_ptr<argument>(new value(t, ts...));
+			inline static argument::pointer create(std::string const &t,
+												   Ts const &... ts) noexcept {
+				return argument::wrap(new value(t, ts...));
 			}
 
 		protected:
@@ -211,60 +240,47 @@ namespace ap {
 			friend result;
 
 		public:
+			using pointer = std::unique_ptr<positional, void (*)(void *)>;
+
+		private:
+			template <typename T>
+			pointer wrap(T *&&pointer) {
+				return {pointer, [](void *t) { delete (T *) t; }};
+			}
+
+		public:
 			template <typename... Ts>
-			inline static std::unique_ptr<argument> create(std::string const &t,
-														   Ts const &... ts) noexcept {
-				return std::unique_ptr<argument>(new positional(t, ts...));
+			inline static pointer create(std::string const &t, Ts const &... ts) noexcept {
+				return wrap(new positional(t, ts...));
 			}
 
 		protected:
 			using value::value;
 		};
-
-		class counter : public argument {
-			friend result;
-
-		public:
-			template <typename... Ts>
-			inline static std::unique_ptr<argument> create(std::string const &t,
-														   Ts const &... ts) noexcept {
-				return std::unique_ptr<argument>(new counter(t, ts...));
-			}
-
-		protected:
-			template <typename... Ts>
-			inline explicit counter(std::string const &t, Ts const &... ts) noexcept
-				: argument([this]() { ++value_; }, std::nullopt,
-						   [this](auto const &v) { return v(value_); }, t, ts...),
-				  value_(0u) {}
-
-		protected:
-			std::size_t value_;
-		};
 	}  // namespace detail
 
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> callable(std::string const &t,
-															 Ts const &... ts) noexcept {
+	inline static detail::argument::pointer callable(std::string const &t,
+													 Ts const &... ts) noexcept {
 		return detail::callable::create(std::nullopt, std::nullopt, t, ts...);
 	}
 
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> callable(
-		std::function<void()> const &no_value_callable, std::string const &t,
-		Ts const &... ts) noexcept {
+	inline static detail::argument::pointer callable(std::function<void()> const &no_value_callable,
+													 std::string const &t,
+													 Ts const &... ts) noexcept {
 		return detail::callable::create(no_value_callable, std::nullopt, t, ts...);
 	}
 
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> callable(
+	inline static detail::argument::pointer callable(
 		std::function<void(std::string_view const &)> const &value_callable, std::string const &t,
 		Ts const &... ts) noexcept {
 		return detail::callable::create(std::nullopt, value_callable, t, ts...);
 	}
 
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> callable(
+	inline static detail::argument::pointer callable(
 		std::function<void()> const &no_value_callable,
 		std::function<void(std::string_view const &)> const &value_callable, std::string const &t,
 		Ts const &... ts) noexcept {
@@ -272,7 +288,7 @@ namespace ap {
 	}
 
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> callable(
+	inline static detail::argument::pointer callable(
 		std::function<void(std::string_view const &)> const &value_callable,
 		std::function<void()> const &no_value_callable, std::string const &t,
 		Ts const &... ts) noexcept {
@@ -280,24 +296,22 @@ namespace ap {
 	}
 
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> flag(std::string const &t,
-														 Ts const &... ts) noexcept {
+	inline static detail::argument::pointer flag(std::string const &t, Ts const &... ts) noexcept {
 		return detail::flag::create(t, ts...);
 	}
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> value(std::string const &t,
-														  Ts const &... ts) noexcept {
+	inline static detail::argument::pointer counter(std::string const &t,
+													Ts const &... ts) noexcept {
+		return detail::counter::create(t, ts...);
+	}
+	template <typename... Ts>
+	inline static detail::argument::pointer value(std::string const &t, Ts const &... ts) noexcept {
 		return detail::value::create(t, ts...);
 	}
 	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> positional(std::string const &t,
-															   Ts const &... ts) noexcept {
+	inline static detail::positional::pointer positional(std::string const &t,
+														 Ts const &... ts) noexcept {
 		return detail::positional::create(t, ts...);
-	}
-	template <typename... Ts>
-	inline static std::unique_ptr<detail::argument> counter(std::string const &t,
-															Ts const &... ts) noexcept {
-		return detail::counter::create(t, ts...);
 	}
 
 	class parsing_results {
@@ -351,26 +365,26 @@ namespace ap {
 		arguments(arguments const &) = delete;
 		arguments(arguments &&)		 = default;
 
-		inline void add(std::unique_ptr<detail::argument> &&a) {
+		inline void add(detail::argument::pointer &&a) {
 			if (was_parsed)
 				errors_.emplace_back("A new argument was added after parsing."
 									 "Undefined behaviour.\n");
 			arguments_.emplace_back(std::move(a));
 		}
 		template <typename... Ts>
-		inline void add(std::unique_ptr<detail::argument> &&a, Ts &&... as) {
+		inline void add(detail::argument::pointer &&a, Ts &&... as) {
 			add(std::move(a));
 			add(std::move(as)...);
 		}
 
-		inline void add(std::unique_ptr<detail::positional> &&a) {
+		inline void add(detail::positional::pointer &&a) {
 			if (was_parsed)
 				errors_.emplace_back("A new argument was added after parsing."
 									 "Undefined behaviour.\n");
 			positional_.emplace_back(std::move(a));
 		}
 		template <typename... Ts>
-		inline void add(std::unique_ptr<detail::positional> &&a, Ts &&... as) {
+		inline void add(detail::positional::pointer &&a, Ts &&... as) {
 			add(std::move(a));
 			add(std::move(as)...);
 		}
@@ -493,8 +507,8 @@ namespace ap {
 		}
 
 	private:
-		std::vector<std::unique_ptr<detail::argument>> arguments_;
-		std::vector<std::unique_ptr<detail::argument>> positional_;
+		detail::argument_container arguments_;
+		detail::argument_container positional_;
 		std::vector<std::string> errors_;
 		std::vector<std::string> warnings_;
 		bool was_parsed;
