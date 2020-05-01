@@ -37,14 +37,14 @@ jobs:
 #       cd build
 #       ctest --build-config Debug
 #       cd ..
-    
-    - name: memory_with_origins_sanitizer
-      run: |
-        cmake -Htest -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
-        cmake --build build --config Debug -j4
-        cd build
-        ctest --build-config Debug
-        cd ..
+#   
+#   - name: memory_with_origins_sanitizer
+#     run: |
+#       cmake -Htest -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
+#       cmake --build build --config Debug -j4
+#       cd build
+#       ctest --build-config Debug
+#       cd ..
         
     - name: undefined_sanitizer
       run: |
