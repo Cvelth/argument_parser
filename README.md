@@ -1,8 +1,11 @@
-[![Actions Status](https://github.com/Cvelth/argument_parser/workflows/MacOS/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
 [![Actions Status](https://github.com/Cvelth/argument_parser/workflows/Windows/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
 [![Actions Status](https://github.com/Cvelth/argument_parser/workflows/Ubuntu/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
+[![Actions Status](https://github.com/Cvelth/argument_parser/workflows/MacOS/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
+
+[![Actions Status](https://github.com/Cvelth/argument_parser/workflows/Sanitizers/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
 [![Actions Status](https://github.com/Cvelth/argument_parser/workflows/Style/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
 [![Actions Status](https://github.com/Cvelth/argument_parser/workflows/Install/badge.svg)](https://github.com/Cvelth/argument_parser/actions)
+
 [![codecov](https://codecov.io/gh/Cvelth/argument_parser/branch/master/graph/badge.svg)](https://codecov.io/gh/Cvelth/argument_parser)
 
 # Argument Parser

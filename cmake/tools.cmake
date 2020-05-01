@@ -3,7 +3,7 @@
 
 # determine if a tool has already been enabled
 foreach(TOOL USE_SANITIZER;USE_CCACHE)
-  get_property(${TOOL}_ENABLED GLOBAL "" PROPERTY ${TOOL}_ENABLED SET)   
+  get_property(${TOOL}_ENABLED GLOBAL "" PROPERTY ${TOOL}_ENABLED SET)
 endforeach()
 
 # enables sanitizers support using the the `USE_SANITIZER` flag
