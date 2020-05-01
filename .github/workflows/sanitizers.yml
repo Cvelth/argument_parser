@@ -29,13 +29,14 @@ jobs:
         ctest --build-config Debug
         cd ..
     
-    - name: memory_sanitizer
-      run: |
-        cmake -Htest -Bbuild -DUSE_SANITIZER=Memory
-        cmake --build build --config Debug -j4
-        cd build
-        ctest --build-config Debug
-        cd ..
+# Not supported.
+#   - name: memory_sanitizer
+#     run: |
+#       cmake -Htest -Bbuild -DUSE_SANITIZER=Memory
+#       cmake --build build --config Debug -j4
+#       cd build
+#       ctest --build-config Debug
+#       cd ..
     
     - name: memory_with_origins_sanitizer
       run: |
@@ -169,22 +170,22 @@ jobs:
         ctest --build-config Debug
         cd ..
 
-# Not supported.    
-#    - name: memory_sanitizer
-#      run: |
-#        cmake -Htest -Bbuild -DUSE_SANITIZER=Memory
-#        cmake --build build --config Debug -j4
-#        cd build
-#        ctest --build-config Debug
-#        cd ..
-#   
-#   - name: memory_with_origins_sanitizer
+# Not supported.
+#   - name: memory_sanitizer
 #     run: |
-#       cmake -Htest -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
+#       cmake -Htest -Bbuild -DUSE_SANITIZER=Memory
 #       cmake --build build --config Debug -j4
 #       cd build
 #       ctest --build-config Debug
 #       cd ..
+#  
+#  - name: memory_with_origins_sanitizer
+#    run: |
+#      cmake -Htest -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
+#      cmake --build build --config Debug -j4
+#      cd build
+#      ctest --build-config Debug
+#      cd ..
         
     - name: undefined_sanitizer
       run: |
@@ -202,7 +203,7 @@ jobs:
         ctest --build-config Debug
         cd ..
         
-# Not supported.    
+# Not supported.
 #   - name: leak_sanitizer
 #     run: |
 #       cmake -Htest -Bbuild -DUSE_SANITIZER=Leak
