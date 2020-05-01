@@ -11,6 +11,7 @@ option(TEST_INSTALLED_VERSION "Test the version found by find_package" OFF)
 # ---- Dependencies ----
 
 include(../cmake/CPM.cmake)
+include(../cmake/tools.cmake)
 
 CPMAddPackage(
   NAME doctest
