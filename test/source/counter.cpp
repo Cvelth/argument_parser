@@ -3,7 +3,7 @@
 
 TEST_CASE("Arguments object with a single <-counter> argument.") {
 	using namespace ap;
-	arguments test_arguments{counter{"counter", "-counter", "c", "x"}};
+	arguments test_arguments(counter("counter", "-counter", "c", "x"));
 
 	SUBCASE("Passing no arguments") {
 		// ./executable
@@ -63,8 +63,8 @@ TEST_CASE("Arguments object with a single <-counter> argument.") {
 
 	SUBCASE("Repeating the call 7 times") {
 		// ./executable -counter -counter --counter -x -c -c -x
-		ap::argument_tester(
-			parse_helper(test_arguments, {"-counter", "-counter", "--counter", "-x", "-c", "-c", "-x"}))
+		ap::argument_tester(parse_helper(test_arguments, {"-counter", "-counter", "--counter", "-x",
+														  "-c", "-c", "-x"}))
 			.no_errors()
 			.no_warnings()
 
