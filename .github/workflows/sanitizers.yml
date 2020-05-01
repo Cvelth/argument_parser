@@ -23,7 +23,7 @@ jobs:
     
     - name: address_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Address
+        cmake -Htest -Bbuild -DUSE_SANITIZER=Address
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
@@ -31,7 +31,7 @@ jobs:
     
     - name: memory_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Memory
+        cmake -Htest -Bbuild -DUSE_SANITIZER=Memory
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
@@ -39,7 +39,7 @@ jobs:
     
     - name: memory_with_origins_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
+        cmake -Htest -Bbuild -DUSE_SANITIZER=MemoryWithOrigins
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
@@ -47,7 +47,7 @@ jobs:
         
     - name: undefined_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Undefined
+        cmake -Htest -Bbuild -DUSE_SANITIZER=Undefined
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
@@ -55,7 +55,7 @@ jobs:
         
     - name: thread_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Thread
+        cmake -Htest -Bbuild -DUSE_SANITIZER=Thread
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
@@ -63,7 +63,7 @@ jobs:
         
     - name: leak_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER=Leak
+        cmake -Htest -Bbuild -DUSE_SANITIZER=Leak
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
@@ -71,7 +71,7 @@ jobs:
         
     - name: address_undefined_sanitizer
       run: |
-        cmake -Htest/coverage -Bbuild -DUSE_SANITIZER='Address;Undefined'
+        cmake -Htest -Bbuild -DUSE_SANITIZER='Address;Undefined'
         cmake --build build --config Debug -j4
         cd build
         ctest --build-config Debug
