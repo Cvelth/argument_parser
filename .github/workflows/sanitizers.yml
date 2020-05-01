@@ -93,6 +93,8 @@ jobs:
         sudo apt-get install -y clang-10
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 100
+        sudo update-alternatives --remove cc
+        sudo update-alternatives --remove c++
         sudo update-alternatives --set cc /usr/bin/clang
         sudo update-alternatives --set c++ /usr/bin/clang++
     
