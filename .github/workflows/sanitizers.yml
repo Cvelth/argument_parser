@@ -87,6 +87,9 @@ jobs:
     - name: install clang-10
       run: |
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        REPO_NAME="deb http://apt.llvm.org/bionic/llvm-toolchain-bionic-10/main"
+        sudo add-apt-repository "${REPO_NAME}"
+        sudo apt-get update
         sudo apt-get install -y clang-10
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 100
@@ -197,13 +200,14 @@ jobs:
         ctest --build-config Debug
         cd ..
         
-    - name: leak_sanitizer
-      run: |
-        cmake -Htest -Bbuild -DUSE_SANITIZER=Leak
-        cmake --build build --config Debug -j4
-        cd build
-        ctest --build-config Debug
-        cd ..
+# Not supported.    
+#   - name: leak_sanitizer
+#     run: |
+#       cmake -Htest -Bbuild -DUSE_SANITIZER=Leak
+#       cmake --build build --config Debug -j4
+#       cd build
+#       ctest --build-config Debug
+#       cd ..
         
     - name: address_undefined_sanitizer
       run: |
