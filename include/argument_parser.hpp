@@ -28,7 +28,6 @@ namespace ap {
 			friend result;
 
 		public:
-
 			[[nodiscard]] inline operator bool() const noexcept { return was_activated; }
 
 		protected:
@@ -164,7 +163,8 @@ namespace ap {
 				std::function<void()> const &no_value_callable,
 				std::function<void(std::string_view const &)> const &value_callable,
 				std::string const &t, Ts const &... ts) noexcept {
-				return std::unique_ptr<argument>(new callable(no_value_callable, value_callable, std::nullopt, t, ts...));
+				return std::unique_ptr<argument>(
+					new callable(no_value_callable, value_callable, std::nullopt, t, ts...));
 			}
 
 		protected:
@@ -201,8 +201,7 @@ namespace ap {
 				: argument(
 					  std::nullopt, [this](auto v) { value_ = v; },
 					  [this](auto const &v) { return v(value_); }, t, ts...),
-				  value_("") {
-			}
+				  value_("") {}
 
 		protected:
 			std::string value_;
@@ -236,7 +235,7 @@ namespace ap {
 			template <typename... Ts>
 			inline explicit counter(std::string const &t, Ts const &... ts) noexcept
 				: argument([this]() { ++value_; }, std::nullopt,
-								   [this](auto const &v) { return v(value_); }, t, ts...),
+						   [this](auto const &v) { return v(value_); }, t, ts...),
 				  value_(0u) {}
 
 		protected:
