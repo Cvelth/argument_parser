@@ -244,7 +244,7 @@ namespace ap {
 
 		private:
 			template <typename T>
-			pointer wrap(T *&&pointer) {
+			inline static pointer wrap(T *&&pointer) {
 				return {pointer, [](void *t) { delete (T *) t; }};
 			}
 
